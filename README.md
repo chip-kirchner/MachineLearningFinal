@@ -11,7 +11,7 @@ Run each script individually (not dependent on order).
 
 Data is then cleaned and formatted via the data_clean.py script file.
 
-Machine learning model training and evaluation takes place in the gridsearch_MLP.py file.
+Machine learning model training and evaluation takes place in the gridsearch_MLPiteration.py file.
 
 
 Steps:
@@ -21,7 +21,7 @@ Steps:
 - Run parse_registration.py
 - Run data_clean.py
   - Clean data is linked in pdf submission
-- Run gridsearch_MLP.py
+- Run gridsearch_MLPiteration.py
   - If file takes too long two parameters can lower the amount of data used to train the file
     - cv controls the number of cross-validations (set to 10)
     - nrows controls the number of rows of data read into the file (at 100,000 rows file takes 5+ hours to compute)
