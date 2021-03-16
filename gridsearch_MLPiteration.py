@@ -625,7 +625,7 @@ final_score = getScores(prediction_test,Y_test)
 #print scores
 print("Estimator \t Accuracy \t Hamming Loss \t F-Score \t Recall \t Precision \t ROC_AUC")
 print("Final MLP \t %0.3f\t\t %0.3f\t\t\t %0.3f\t\t %0.3f\t\t %0.3f\t\t %0.3f" % (final_score["accuracy"],final_score["hamming"],final_score["fscore"],final_score["recall"],final_score["precision"],final_score["ROC_AUC"]))
-print("MLP Grid  \t %0.3f\t\t %0.3f\t\t\t %0.3f\t\t %0.3f\t\t %0.3f\t\t %0.3f \t\t %d" % (mlp_score["accuracy"],mlp_score["hamming"],mlp_score["fscore"],mlp_score["recall"],mlp_score["precision"],mlp_score["ROC_AUC"],mlp_score["fit_time"]))
+print("MLP Grid  \t %0.3f\t\t %0.3f\t\t\t %0.3f\t\t %0.3f\t\t %0.3f\t\t %0.3f" % (mlp_score["accuracy"],mlp_score["hamming"],mlp_score["fscore"],mlp_score["recall"],mlp_score["precision"],mlp_score["ROC_AUC"]))
 
 
 final_fpr, final_tpr, final_thresholds = metrics.roc_curve(Y_test, proba_test[:,1])
