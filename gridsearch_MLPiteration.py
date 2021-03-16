@@ -62,7 +62,7 @@ cv=10
 nrows=1000
 
 #bring in data from registration and election history
-data = pd.read_csv("data/train/TRAINING_RegHistory.csv",nrows=nrows,converters={'Registration ID': lambda x: str(x)})
+data = pd.read_csv("data/registrationAndHistory.csv",nrows=nrows,converters={'Registration ID': lambda x: str(x)})
 #drop duplicate/error records
 data = data.loc[(data["11/03/2020 GENERAL"]<2) & (data["11/06/2018 GENERAL"]<2) & 
                 (data["11/08/2016 GENERAL"]<2) & (data["11/04/2014 GENERAL"]<2) & 
@@ -71,7 +71,7 @@ data = data.loc[(data["11/03/2020 GENERAL"]<2) & (data["11/06/2018 GENERAL"]<2) 
 #get label for classification
 labels = data["11/03/2020 GENERAL"]
 #drop label, index, voter regiration, geographic info, and local elections
-data.drop(["11/03/2020 GENERAL","Unnamed: 0","Registration ID","County ID",
+data.drop(["11/03/2020 GENERAL","Registration ID","County ID",
            "Address Zip Code","Birth State","04/30/2019 PRIMARY",
            "05/14/2019 PRIMARY","09/10/2013 PRIMARY","09/10/2019 GENERAL",
            "09/10/2019 PRIMARY","11/03/2015 GENERAL","11/05/2013 GENERAL",
