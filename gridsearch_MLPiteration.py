@@ -59,7 +59,7 @@ np.random.RandomState(12)
 cv=10
 
 #set nrows of data to be read in (dataset too large to run on most devices)
-nrows=1000
+nrows=200000
 
 #bring in data from registration and election history
 data = pd.read_csv("data/registrationAndHistory.csv",nrows=nrows,converters={'Registration ID': lambda x: str(x)})
@@ -437,6 +437,30 @@ plt.show()
 
 
 #additional training epochs against the MLP Model
+#bring in large dataset
+
+#bring in full data from registration and election history
+data = pd.read_csv("data/registrationAndHistory.csv",converters={'Registration ID': lambda x: str(x)})
+#drop duplicate/error records
+data = data.loc[(data["11/03/2020 GENERAL"]<2) & (data["11/06/2018 GENERAL"]<2) & 
+                (data["11/08/2016 GENERAL"]<2) & (data["11/04/2014 GENERAL"]<2) & 
+                (data["11/06/2012 GENERAL"]<2) & (data["03/15/2016 PRIMARY"]<2)]
+
+#get label for classification
+labels = data["11/03/2020 GENERAL"]
+#drop label, index, voter regiration, geographic info, and local elections
+data.drop(["11/03/2020 GENERAL","Registration ID","County ID",
+           "Address Zip Code","Birth State","04/30/2019 PRIMARY",
+           "05/14/2019 PRIMARY","09/10/2013 PRIMARY","09/10/2019 GENERAL",
+           "09/10/2019 PRIMARY","11/03/2015 GENERAL","11/05/2013 GENERAL",
+           "11/05/2019 GENERAL","11/07/2017 GENERAL","11/08/2011 GENERAL"],
+          axis=1,inplace=True)
+
+#ecode categorical data
+encodedData = encode(data)
+
+#split for gridsearchCV validation and full training validation
+X_train, X_test, Y_train, Y_test = train_test_split(encodedData, labels,test_size = 1/3, random_state=12)
 
 
 kf = KFold(n_splits=cv,shuffle=True,random_state=12)
@@ -450,7 +474,8 @@ train_f1 = dict()
 test_f1 = dict()
 train_time = dict()
 
-n_epochs = 100
+n_epochs = 300
+c=1
 
 #initialize empty lists for training data
 for i in range(n_epochs):
@@ -477,10 +502,8 @@ for train_index, test_index in kf.split(X_train.to_numpy()):
     K_train_under, L_train_under = RandomUnderSampler(sampling_strategy=0.4).fit_resample(K_train,L_train)
     K_train_under, L_train_under = RandomOverSampler().fit_resample(K_train_under,L_train_under)
     #initalize classifier with parameters from gridsearch best estimator
-    mlp = MLPClassifier(solver='sgd',hidden_layer_sizes=[20,10,5],alpha=0.001,
-                        learning_rate_init=0.1,learning_rate='adaptive',max_iter=500,activation='logistic')
+    mlp = MLPClassifier(**clf_GS.best_estimator_['mlp'].get_params())
     
-    c=1
     
     startTime=time.time()
     #partial fit for i epochs
@@ -489,7 +512,7 @@ for train_index, test_index in kf.split(X_train.to_numpy()):
         print("Running Epoch %d of %d" % (i,n_epochs))
         print("Current time: %d" %(time.time()-startTime))
         print("Avg time per epoch: %0.2f" %((time.time()-startTime)/(i+1)))
-        c+=1
+        
         #partial fit
         mlp.partial_fit(K_train_under,L_train_under.ravel(),classes=[0,1])
         
@@ -506,7 +529,7 @@ for train_index, test_index in kf.split(X_train.to_numpy()):
         test_hamming[i].append(metrics.hamming_loss(L_test,pred_test))
         train_f1[i].append(metrics.f1_score(L_train_under,pred_train,average='weighted'))
         test_f1[i].append(metrics.f1_score(L_test,pred_test,average='weighted'))
-        
+    c+=1
 
 #initialize dictionaries with empty lists
 train_accuracy["mean"] = []
